@@ -1,0 +1,82 @@
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://d3js.org/d3-geo-projection.v2.min.js"></script>
+
+
+<svg width=960 height=600>
+</svg>
+
+<script>
+
+  // Also see TOPOJSON
+
+Promise.all([
+  d3.json('world.geojson'),
+  d3.csv('cities.csv')
+]).then( ([countries, cities]) => {
+  createMap(countries,cities)
+})
+
+
+function createMap(countries, cities) {
+    console.log(countries);
+
+    var proj = d3.geoEquirectangular()
+        .translate([250, 250])
+        .scale(120);
+
+    var gpath = d3.geoPath()
+        .projection(proj);
+
+    d3.select('svg')
+    .append('g')
+    .attr('id', 'countries')
+    .selectAll('path')
+    .data(countries.features)
+    .enter()
+    .append('path')
+      .attr('d', function(d) { console.log(d); return gpath(d); })
+      .attr('stroke-width', 1)
+      .attr('stroke', 'hotpink')
+      .attr('id', d => d.id)
+      .attr('fill', "white" )
+    
+    .on('mouseover', function()//鼠标移动到对应地区后填色
+    {
+        d3.select(this).attr('fill', "blue")
+    })
+    .on('mouseout', function()
+    {
+        d3.select(this).attr('fill', "white")
+    })
+
+    //d3.select('#EGY')
+
+//添加地图缩放效果（仅缩放地图而非缩放网页
+
+    var mapZoom = d3.zoom()
+        .on('zoom',zoomed);
+    
+    var zoomSettings = d3.zoomIdentity
+        .translate(250, 250)
+        .scale(120);
+
+    d3.select('svg')
+        .call(mapZoom)
+        .call(mapZoom.transform, zoomSettings);
+    
+    function zoomed(e)
+    {
+        proj
+      .translate([e.transform.x, e.transform.y])
+      .scale(e.transform.k);
+
+    // redraw map with new projection settings
+    d3.selectAll('path')
+      .attr('d', gpath);
+
+    }
+
+  }
+
+
+</script>
