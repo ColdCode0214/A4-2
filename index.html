@@ -51,7 +51,7 @@ function createMap(countries, cities) {
 
     //d3.select('#EGY')
 
-//添加地图缩放效果（仅缩放地图而非缩放网页
+//添加地图缩放效果（仅缩放地图而非缩放网页)
 
     var mapZoom = d3.zoom()
         .on('zoom',zoomed);
@@ -70,11 +70,23 @@ function createMap(countries, cities) {
       .translate([e.transform.x, e.transform.y])
       .scale(e.transform.k);
 
+    //console.log(e);
+
+    if(e.transform.k>400)
+        console.log('toggle adaptive map feature')
+
     // redraw map with new projection settings
     d3.selectAll('path')
       .attr('d', gpath);
 
     }
+
+
+
+
+
+
+
 
   }
 
